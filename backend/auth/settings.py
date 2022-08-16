@@ -48,14 +48,15 @@ INSTALLED_APPS = [
 	'django.contrib.staticfiles',
 	'rest_framework',
 	'djoser',
-	'accounts'
+	'accounts',
+	'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
 	'django.middleware.security.SecurityMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.common.CommonMiddleware',
-	'django.middleware.csrf.CsrfViewMiddleware',
+	# 'django.middleware.csrf.CsrfViewMiddleware',
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -95,11 +96,18 @@ DATABASES = {
 	}
 }
 
-EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
-EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_PORT = os.getenv("EMAIL_PORT")
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS")
+EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST='smtp.gmail.com'
+EMAIL_HOST_USER='mtv.maonv@gmail.com'
+EMAIL_HOST_PASSWORD="aqfyuipvixowohum"
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+
+# EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
+# EMAIL_HOST = os.getenv("EMAIL_HOST")
+# EMAIL_PORT = os.getenv("EMAIL_PORT")
+# EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+# EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS")
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -141,13 +149,17 @@ STATICFILES_DIRS = [
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
+	'DEFAULT_AUTHENTICATION_CLASSES': (
+		'rest_framework_simplejwt.authentication.JWTAuthentication',
+	),
 }
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend'
+)
+
 SIMPLE_JWT = {
-   'AUTH_HEADER_TYPES': ('JWT',),
+	'AUTH_HEADER_TYPES': ('JWT',),
 }
 
 DJOSER = {
@@ -162,6 +174,11 @@ DJOSER = {
 	'USERNAME_RESET_CONFIRM_URL': 'email/reset/confirm/{uid},{token}',
 	'ACTIVATION_URL': 'activate/{uid}/{token}',
 	'SEND_ACTIVATION_EMAIL': True,
+	'SERIALIZERS': {
+		'user_create': 'accounts.serializers.UserCreateSerializer',
+		'user': 'accounts.serializers.UserCreateSerializer',
+		'user_delete': 'djoser.serializers.UserDeleteSerializer',
+	}
 }
 
 AUTH_USER_MODEL = 'accounts.UserAccount'
